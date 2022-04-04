@@ -1,0 +1,96 @@
+#include <iostream>
+#include <map>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    int mat[n][n];
+    map<int, vector<int>> out;
+    for (int i = 0; i < n; i++) {
+        out.insert(make_pair(i, vector<int>()));
+        for (int j = 0; j < n; j++) {
+            mat[i][j] = 2e9;
+        }
+        mat[i][i] = 0;
+    }
+    for (int co = 0; co < m; co++) {
+        int i, j;
+        cin >> i >> j;
+        i--;
+        j--;
+        cin >> mat[i][j];
+        mat[j][i] = mat[i][j];
+        out[i].push_back(j);
+        out[j].push_back(i);
+    }
+    int a, b, c;
+    cin >> a >> b >> c;
+    a--;
+    b--;
+    c--;
+    unsigned long long ww[n];
+    int index, u;
+    bool visited[n];
+    for (int i = 0; i < n; i++) {
+        ww[i] = LONG_MAX;
+        visited[i] = false;
+    }
+    ww[a] = 0;
+    for (int count = 0; count < n - 1; count++) {
+        auto min = LONG_MAX;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && ww[i] <= min) {
+                min = ww[i];
+                index = i;
+            }
+        }
+        u = index;
+        visited[u] = true;
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && mat[u][i] < 2e9 && ww[u] < LONG_MAX &&
+                ww[u] + mat[u][i] < ww[i]) {
+                ww[i] = ww[u] + mat[u][i];
+            }
+        }
+    }
+    unsigned long long res1 = ww[b];
+    unsigned long long res2 = ww[c];
+
+    for (int i = 0; i < n; i++) {
+        ww[i] = LONG_MAX;
+        visited[i] = false;
+    }
+    ww[b] = 0;
+    for (int count = 0; count < n - 1; count++) {
+        auto min = LONG_MAX;
+        for (int i = 0; i < n; i++)
+            if (!visited[i] && ww[i] <= min) {
+                min = ww[i];
+                index = i;
+            }
+        u = index;
+        visited[u] = true;
+        for (int i = 0; i < n; i++)
+            if (!visited[i] && mat[u][i] < 2e9 && ww[u] < LONG_MAX &&
+                ww[u] + mat[u][i] < ww[i])
+                ww[i] = ww[u] + mat[u][i];
+    }
+    unsigned long long res3 = ww[c];
+//    cout << res1 << " " << res2 << " " << res3 << endl;
+    unsigned long long res[3];
+    res[0] = res1;
+    res[1] = res2;
+    res[2] = res3;
+    std::sort(begin(res), end(res));
+//    cout << res[0] << " " << res[1] << " " << res[2] << endl;
+//    cout << sum << endl;
+    if (res[1] < LONG_MAX) {
+        cout << res[0] + res[1];
+    } else {
+        cout << -1;
+    }
+}
